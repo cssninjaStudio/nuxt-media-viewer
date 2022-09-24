@@ -2,19 +2,20 @@ import { promises as fsp } from 'fs'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import sizeOf from 'image-size'
-import { resolve, join } from 'pathe'
+import { join } from 'pathe'
+import { type AssetImageDimentions, AssetStats } from '../../shared'
 
 const execPromise = promisify(exec)
 const sizeOfPromise = promisify(sizeOf)
 
+// color regex extractors
 const COLOR_RE = /(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\b|(?:rgb|hsl)a?\([^)]*\)|currentcolor/gi
 
+// get real path of public directory
 const config = useRuntimeConfig()
 const dir = config.mediaViewer.publicRoot
-// const dir = resolve(process.cwd(), process.env.NODE_ENV === 'development' ? './public' : './.output/public')
 
-type ImageDimensions = Awaited<ReturnType<typeof sizeOfPromise>> & { mode?: string, aspect?: string }
-
+// file system stats helpers
 async function getMimetype (path: string) {
   try {
     const result = await execPromise(`file --mime-type -b "${path}"`)
@@ -55,7 +56,6 @@ export default defineEventHandler(async (event) => {
   const { key } = useQuery(event) as { key: string }
   const part = key.split(':')
   const name = part.pop()
-  // console.log('nitro', nitro)
 
   // remove root
   part.shift()
@@ -80,14 +80,17 @@ export default defineEventHandler(async (event) => {
     getGitVersions(absolutePath)
   ])
 
-  const dimensions: ImageDimensions | undefined = mimetype.startsWith('image/') ? await sizeOfPromise(absolutePath) : undefined
-  const source = mimetype.startsWith('image/svg') ? await fsp.readFile(absolutePath, 'utf-8') : undefined
   const git = {
     ctime,
     mtime,
     versions
   }
 
+  // extract images specific informations
+  const dimensions: AssetImageDimentions | undefined = mimetype.startsWith('image/') ? await sizeOfPromise(absolutePath) : undefined
+  const source = mimetype.startsWith('image/svg') ? await fsp.readFile(absolutePath, 'utf-8') : undefined
+
+  // compute mode and aspect ratio
   if (dimensions) {
     if (dimensions.height === 0 || dimensions.width === 0) {
       return
@@ -128,6 +131,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // extract colors
   const colors: string[] = source?.match(COLOR_RE).reduce((acc, color) => {
     if (!acc.includes(color)) {
       acc.push(color)
@@ -147,9 +151,9 @@ export default defineEventHandler(async (event) => {
     colors,
     stat: {
       size: imageStat.size,
-      atime: imageStat.atime,
-      mtime: imageStat.mtime,
-      ctime: imageStat.ctime
+      atime: imageStat.atime.toISOString(),
+      mtime: imageStat.mtime.toISOString(),
+      ctime: imageStat.ctime.toISOString()
     }
-  }
+  } as AssetStats
 })

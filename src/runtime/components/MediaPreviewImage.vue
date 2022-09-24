@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { ref, inject, watchEffect, onBeforeUnmount, watch } from 'vue'
-const props = defineProps<{
-  selectedAssetKey: string
-}>()
+import { ref, computed, inject, watchEffect, onBeforeUnmount, watch } from 'vue'
+// @ts-ignore
+import { useRoute } from '#app'
+import { keyToPath } from '../shared'
+
+const route = useRoute()
 
 const imageRef = ref()
 const mode = ref<'scale' | 'real'>('scale')
+const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
 
 const previewState = inject<any>('previewState')
-
-function keyToPath (key: string) {
-  return key.replace(/:/g, '/').replace('root/public/', '/')
-}
 
 const dragging = ref(false)
 const offsetX = ref(0)
@@ -19,41 +18,36 @@ const offsetY = ref(0)
 const initialX = ref(0)
 const initialY = ref(0)
 
-// const transform = computed(() => `translate(${offsetX.value - initialX.value}px, ${offsetY.value - initialY.value}px)`)
-
-function onDragStart (e) {
+function onMousedown (e: MouseEvent) {
   dragging.value = true
   initialX.value = e.offsetX
   initialY.value = e.offsetY
   // e.target.style.setProperty('cursor', 'grabbing', 'important')
-  document.addEventListener('mousemove', onDrag)
-  document.addEventListener('mouseup', onDragEnd)
+  document.addEventListener('mousemove', onMousemove)
+  document.addEventListener('mouseup', onMouseup)
 }
 
-function onDrag (e) {
-  if (!e.screenX && !e.screenY) { return }
+function onMousemove (e: MouseEvent) {
+  if (!e.screenX && !e.screenY) { return } // don't move if mouse is out of the screen
   if (!imageRef.value) { return }
-  offsetX.value = e.clientX - initialX.value - 128
-  offsetY.value = e.clientY - initialY.value - 96
+
+  offsetX.value = e.clientX - initialX.value - 128 // 128 = mx-32 (magin present on X axis on MediaPreview container)
+  offsetY.value = e.clientY - initialY.value - 96 // 96 = my-24 (magin present on Y axis on on MediaPreview container)
 }
 
-function onDragEnd (e) {
+function onMouseup (e: MouseEvent) {
   dragging.value = false
   // e.target.style.removeProperty('cursor')
-  document.removeEventListener('mousemove', onDrag)
-  document.removeEventListener('mouseup', onDragEnd)
+  document.removeEventListener('mousemove', onMousemove)
+  document.removeEventListener('mouseup', onMouseup)
 }
 
 watchEffect(() => {
-  if (imageRef.value) {
-    imageRef.value.addEventListener('mousedown', onDragStart)
-  }
+  imageRef.value?.addEventListener('mousedown', onMousedown)
 })
 
 onBeforeUnmount(() => {
-  if (imageRef.value) {
-    imageRef.value.removeEventListener('mousedown', onDragStart)
-  }
+  imageRef.value?.removeEventListener('mousedown', onMousedown)
 })
 
 watch(mode, () => {
@@ -81,7 +75,7 @@ watch(mode, () => {
     />
     <img
       v-else
-      :src="keyToPath(props.selectedAssetKey)"
+      :src="keyToPath(selectedAssetKey)"
       class="prevent-drag block object-scale-down w-full max-w-full max-h-full"
       tabindex="0"
     >
@@ -112,7 +106,7 @@ watch(mode, () => {
       </div>
 
       <a
-        :href="keyToPath(props.selectedAssetKey)"
+        :href="keyToPath(selectedAssetKey)"
         class=" text-sm py-1 px-3 rounded bg-white border border-slate-100 hover:bg-indigo-400 hover:text-white"
         target="_blank"
       >

@@ -3,27 +3,28 @@ import { inject } from 'vue'
 import prettyBytes from 'pretty-bytes'
 import { parseISO, formatDistanceToNow } from 'date-fns'
 
-const props = defineProps<{
-  selectedAssetKey: string
-}>()
-
 const previewState = inject<any>('previewState')
 
-function onUpdateWidth (event) {
-  const targetWidth = event.target.value ? Math.min(previewState.stats.dimensions.width, event.target.value) : previewState.stats.dimensions.width
+// force height to match aspect ratio on width update
+function onUpdateWidth (event: Event) {
+  const target = event.target as HTMLInputElement
+  const targetWidth = target.value ? Math.min(previewState.stats.dimensions.width, Number(target.value)) : previewState.stats.dimensions.width
   const ratio = previewState.stats.dimensions.height / previewState.stats.dimensions.width
 
   previewState.targetWidth = targetWidth
   previewState.targetHeight = Math.ceil(targetWidth * ratio)
-  event.target.value = targetWidth
+  target.value = targetWidth
 }
-function onUpdateHeight (event) {
-  const targetHeight = event.target.value ? Math.min(previewState.stats.dimensions.height, event.target.value) : previewState.stats.dimensions.height
+
+// force width to match aspect ratio on height update
+function onUpdateHeight (event: Event) {
+  const target = event.target as HTMLInputElement
+  const targetHeight = target.value ? Math.min(previewState.stats.dimensions.height, Number(target.value)) : previewState.stats.dimensions.height
   const ratio = previewState.stats.dimensions.width / previewState.stats.dimensions.height
 
   previewState.targetWidth = Math.ceil(targetHeight * ratio)
   previewState.targetHeight = targetHeight
-  event.target.value = targetHeight
+  target.value = targetHeight
 }
 </script>
 

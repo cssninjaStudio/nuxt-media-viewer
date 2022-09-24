@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.0.0-rc.11",
-    "@nuxtjs/tailwindcss": "^5.3.3",
     "@vueuse/core": "^9.2.0",
     "@vueuse/nuxt": "^9.2.0",
     "chalk": "^5.0.1",
@@ -31,7 +30,6 @@
     "etag": "^1.8.1",
     "image-size": "^1.0.2",
     "ipx": "^0.9.11",
-    "ix": "^5.0.0",
     "pathe": "^0.3.8",
     "qs": "^6.11.0"
   },

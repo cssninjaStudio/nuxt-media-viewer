@@ -16,22 +16,21 @@ export default defineNuxtModule({
     const logger = consola.withScope('nuxt:media-viewer')
 
     if (options.installIpxMiddleware) {
+      // @todo: check if ipx middleware is already installed (and same format?)
       addServerHandler({
         handler: resolve(runtimeDir, 'server/middlewares/ipx')
       })
     }
 
+    // for now only inject viewer on dev mode
     if (nuxt.options.dev) {
+      // not sure if we need this if we don't include viewer in build?
       nuxt.options.build.transpile.push(runtimeDir)
-      await installModule('@nuxtjs/tailwindcss', {
-        config: {
-          content: [
-            resolve(runtimeDir, './components', '**/*.vue'),
-            resolve(runtimeDir, './pages', '**/*.vue')
-          ]
-        }
-      })
+
+      // @todo: remove this dependency (onKeyStroke)
       await installModule('@vueuse/nuxt')
+
+      // register server routes to list files and get their stats
       addServerHandler({
         route: '/_media-viewer/ls',
         handler: resolve(runtimeDir, 'server/dev-routes/ls')
@@ -40,11 +39,8 @@ export default defineNuxtModule({
         route: '/_media-viewer/stats',
         handler: resolve(runtimeDir, 'server/dev-routes/stats')
       })
-      addComponentsDir({
-        path: resolve(runtimeDir, 'components'),
-        isAsync: true
-      })
 
+      // inject viewer in current app router
       nuxt.hook('pages:extend', (pages) => {
         pages.push({
           name: 'module:media-viewer',
@@ -58,6 +54,7 @@ export default defineNuxtModule({
         publicRoot: resolve(nuxt.options.rootDir, 'public')
       }
 
+      // seems not to be needed as we can use root:public prefix
       // nuxt.hook('nitro:config', (config) => {
       //   console.log('nitro:config', config)
       //   config.storage = {
@@ -72,7 +69,6 @@ export default defineNuxtModule({
         logger.info(`Media Viewer: ${chalk.underline.yellow(`${listener.url}_media-viewer/`)}`)
       })
 
-      // console.log(createResolver(import.meta.url).resolve('viewer'))
       // const viewerNuxtApp = await loadNuxt({
       //   rootDir: createResolver(import.meta.url).resolve('viewer'),
       //   dev: true,

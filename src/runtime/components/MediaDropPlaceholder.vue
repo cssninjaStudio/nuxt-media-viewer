@@ -2,59 +2,61 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 const isDropping = ref(false)
 
+// drag file over app handlers, to show drop placeholder
+// we need to keep track of how deep the drag is because it raises on each child elements
 let dragCount = 0
-function onDragEnter (e) {
-  console.log('onDragEnter', e?.dataTransfer?.files?.length, e?.dataTransfer?.items?.length)
+function onDragenter (e) {
   dragCount += 1
   if (dragCount === 1) {
     isDropping.value = true
   }
 }
-function onDragLeave (e) {
-  console.log('onDragLeave', e?.dataTransfer?.files?.length, e?.dataTransfer?.items?.length)
+function onDragleave (e: DragEvent) {
   dragCount -= 1
   if (dragCount === 0) {
     isDropping.value = false
   }
 }
-function onDragOver (e) {
-  // console.log('onDragOver', e?.dataTransfer?.files?.length)
+function onDragover (e: DragEvent) {
+  // prevent file from being opened in new browser tab
   e.preventDefault()
 }
-function onDrop (e) {
-  console.log('onDragLeave', e?.dataTransfer?.files?.length, e?.dataTransfer?.items?.length)
-  e.preventDefault()
+function onDrop (event: DragEvent) {
+  event.preventDefault()
+
   isDropping.value = false
   dragCount = 0
 
-  if (e.dataTransfer.items) {
+  // how handle file upload?
+  if (event.dataTransfer?.items) {
     // Use DataTransferItemList interface to access the file(s)
-    [...e.dataTransfer.items].forEach((item, i) => {
+    [...event.dataTransfer.items].forEach((item, i) => {
       // If dropped items aren't files, reject them
       if (item.kind === 'file') {
         const file = item.getAsFile()
-        console.log(`… file[${i}].name = ${file.name}`, file)
+        console.log(`… file[${i}].name = ${file?.name}`, file)
       }
     })
-  } else {
+  } else if (event.dataTransfer?.files) {
     // Use DataTransfer interface to access the file(s)
-    [...e.dataTransfer.files].forEach((file, i) => {
+    [...event.dataTransfer.files].forEach((file, i) => {
       console.log(`… file[${i}].name = ${file.name}`, file)
     })
   }
 }
 
+// register drag events
 onMounted(() => {
-  document.documentElement.addEventListener('dragenter', onDragEnter, false)
-  document.documentElement.addEventListener('dragleave', onDragLeave, false)
-  document.documentElement.addEventListener('dragover', onDragOver, false)
+  document.documentElement.addEventListener('dragenter', onDragenter, false)
+  document.documentElement.addEventListener('dragleave', onDragleave, false)
+  document.documentElement.addEventListener('dragover', onDragover, false)
   document.documentElement.addEventListener('drop', onDrop)
 })
 
 onBeforeUnmount(() => {
-  document.documentElement.removeEventListener('dragenter', onDragEnter)
-  document.documentElement.removeEventListener('dragleave', onDragLeave)
-  document.documentElement.removeEventListener('dragover', onDragOver)
+  document.documentElement.removeEventListener('dragenter', onDragenter)
+  document.documentElement.removeEventListener('dragleave', onDragleave)
+  document.documentElement.removeEventListener('dragover', onDragover)
   document.documentElement.removeEventListener('drop', onDrop)
 })
 </script>

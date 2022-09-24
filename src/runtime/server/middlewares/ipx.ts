@@ -1,4 +1,7 @@
-import { resolve } from 'pathe'
+// same as https://github.com/unjs/ipx/blob/main/src/middleware.ts
+// but work with query params
+// initial goal was to not use /_ipx prefix and plug this middleware directly on public folder but seems not possible
+
 import { createIPX } from 'ipx'
 import { send, appendHeader } from 'h3'
 import qs from 'qs'
@@ -7,7 +10,6 @@ import getEtag from 'etag'
 // @ts-ignore
 const config = useRuntimeConfig()
 const dir = config.mediaViewer.publicRoot
-// const dir = resolve(process.cwd(), process.env.NODE_ENV === 'development' ? './public' : './.output/public')
 
 const ipx = createIPX({
   dir,
