@@ -50,6 +50,7 @@ export default defineNuxtModule({
         })
       })
 
+      // we need to locate the root public dir
       nuxt.options.runtimeConfig.mediaViewer = {
         publicRoot: resolve(nuxt.options.rootDir, 'public')
       }

@@ -2,7 +2,7 @@
 import { ref, computed, inject, watchEffect, onBeforeUnmount, watch } from 'vue'
 // @ts-ignore
 import { useRoute } from '#app'
-import { keyToPath } from '../shared'
+import { keyToPath, PreviewState } from '../shared'
 
 const route = useRoute()
 
@@ -10,7 +10,8 @@ const imageRef = ref()
 const mode = ref<'scale' | 'real'>('scale')
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
 
-const previewState = inject<any>('previewState')
+const previewState = inject<PreviewState>('previewState')
+const isImage = computed(() => previewState?.stats?.mimetype?.startsWith('image/'))
 
 const dragging = ref(false)
 const offsetX = ref(0)
@@ -60,18 +61,22 @@ watch(mode, () => {
 
 <template>
   <div class="relative overflow-hidden rounded-l border-slate-100 border-r preview w-7/12 flex items-center justify-center">
+    <div v-if="!isImage" class="rounded flex flex-col justify-center border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] bg-white object-scale-down">
+      <div class="truncate w-full text-center">{{ previewState?.stats?.name }}</div>
+      <div class="truncate w-full text-center text-sm text-slate-400">{{ previewState?.stats?.mimetype }}</div>
+    </div>
     <span
-      v-if="mode === 'real'"
+      v-else-if="mode === 'real'"
       ref="imageRef"
       class="prevent-drag block absolute max-w-none origin-top-left hover:cursor-grab active:cursor-grabbing"
       tabindex="0"
       :style="{
         left: `${offsetX}px`,
         top: `${offsetY}px`,
-        width: `${previewState.targetWidth}px`,
-        height: `${previewState.targetHeight}px`,
+        width: `${previewState?.targetWidth ?? 0}px`,
+        height: `${previewState?.targetHeight ?? 0}px`,
       }"
-      v-html="previewState.snippet"
+      v-html="previewState?.snippet"
     />
     <img
       v-else
@@ -83,23 +88,25 @@ watch(mode, () => {
       <div>
         <button
           type="button"
-          class=" text-sm py-1 px-3 rounded-l border-r-0 border border-slate-100 hover:bg-indigo-400 hover:text-white"
+          class=" text-sm py-1 px-3 rounded-l border-r-0 border border-slate-100 disabled:opacity-60 disabled:cursor-not-allowed active:hover:bg-indigo-400 active:hover:text-white"
           :class="[
             mode === 'scale' && 'bg-indigo-400 text-white',
             mode !== 'scale' && 'bg-white',
           ]"
           @click="mode = 'scale'"
+          :disabled="!isImage"
         >
           Overview
         </button>
         <button
           type="button"
-          class=" text-sm py-1 px-3 rounded-r bg-white border border-slate-100 hover:bg-indigo-400 hover:text-white"
+          class=" text-sm py-1 px-3 rounded-r bg-white border border-slate-100 disabled:opacity-60 disabled:cursor-not-allowed active:hover:bg-indigo-400 active:hover:text-white"
           :class="[
             mode === 'real' && 'bg-indigo-400 text-white',
             mode !== 'real' && 'bg-white',
           ]"
           @click="mode = 'real'"
+          :disabled="!isImage"
         >
           Realtime preview
         </button>

@@ -33,7 +33,7 @@ const directoriesKeysPrefix = computed(() => {
       return parts.join(':')
     })
     .reduce((acc, item) => {
-      if (!acc.includes(item)) {
+      if (item !== 'root:public' && !acc.includes(item)) {
         acc.push(item)
       }
       return acc

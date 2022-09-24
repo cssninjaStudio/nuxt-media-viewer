@@ -1,30 +1,42 @@
 <script setup lang="ts">
-import { keyToPath } from '../shared'
+import { onMounted, ref } from 'vue'
+import { keyToPath, type AssetStats } from '../shared'
 
 const props = defineProps<{
   assetKey: string
 }>()
 
-function onImageError (event: Event) {
-  // fetch asset stats
-  console.log(props.assetKey, event)
+const isImage = ref(true)
+const fileStat = ref<AssetStats>()
 
-  // show an icon from the mimetype
-}
+onMounted(() => {
+  // check if image loads, the @error.once seems to be cached
+  const image = new Image()
+  image.onerror = async () => {
+    image.onerror = null
+    fileStat.value = await $fetch(`/_media-viewer/stats?key=${props.assetKey}`)
+    isImage.value = false
+  }
+  image.src = keyToPath(props.assetKey)
+})
 </script>
 
 <template>
-  <NuxtLink :key="assetKey" :to="`#${assetKey}`" class="transition-all  hover:scale-150">
+  <NuxtLink :key="props.assetKey" :to="`#${props.assetKey}`" class="transition-all prevent-drag hover:scale-150">
     <img
-      :src="`${keyToPath(assetKey, true)}?h=300`"
-      :title="keyToPath(assetKey)"
+      v-if="isImage"
+      :src="`${keyToPath(props.assetKey, true)}?h=300`"
+      :title="keyToPath(props.assetKey)"
       width="100"
       loading="lazy"
       decoding="async"
       draggable="false"
       class="prevent-drag rounded border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] preview bg-white object-scale-down"
-      @error.once="onImageError"
     >
+    <div v-else class="rounded flex flex-col justify-center border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] preview bg-white object-scale-down">
+      <div class="truncate w-full text-center">{{ fileStat?.name }}</div>
+      <div class="truncate w-full text-center text-sm text-slate-400">{{ fileStat?.mimetype }}</div>
+    </div>
   </NuxtLink>
 </template>
 
