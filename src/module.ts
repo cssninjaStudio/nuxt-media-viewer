@@ -6,7 +6,7 @@ import consola from 'consola'
 
 export default defineNuxtModule({
   meta: {
-    name: 'media-viewer'
+    name: '@cssninja/nuxt-media-viewer'
   },
   defaults: {
     installIpxMiddleware: true
