@@ -3,7 +3,8 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import sizeOf from 'image-size'
 import { join } from 'pathe'
-import { type AssetImageDimentions, AssetStats } from '../../shared'
+import { AssetImageDimentions, AssetStats } from '../../shared'
+import { type ISizeCalculationResult, type ISize } from 'image-size/dist/types/interface'
 
 const execPromise = promisify(exec)
 const sizeOfPromise = promisify(sizeOf)
@@ -53,9 +54,13 @@ async function getGitVersions (path: string) {
 }
 
 export default defineEventHandler(async (event) => {
-  const { key } = useQuery(event) as { key: string }
+  const { key } = getQuery(event) as { key: string }
   const part = key.split(':')
   const name = part.pop()
+
+  if (!name) {
+    return
+  }
 
   // remove root
   part.shift()
@@ -87,16 +92,19 @@ export default defineEventHandler(async (event) => {
   }
 
   // extract images specific informations
-  const dimensions: AssetImageDimentions | undefined = mimetype.startsWith('image/') ? await sizeOfPromise(absolutePath) : undefined
+  const dimensions: ISize & { mode?: 'portrait' | 'landscape' | 'square'; aspect?: string  } | undefined = mimetype.startsWith('image/') ? await sizeOfPromise(absolutePath).then(r => r) : undefined
   const source = mimetype.startsWith('image/svg') ? await fsp.readFile(absolutePath, 'utf-8') : undefined
 
   // compute mode and aspect ratio
   if (dimensions) {
-    if (dimensions.height === 0 || dimensions.width === 0) {
+    const width = dimensions.width ?? 0
+    const height = dimensions.height ?? 0
+
+    if (height === 0 || width === 0) {
       return
     }
 
-    if (dimensions.height === dimensions.width) {
+    if (height === width) {
       dimensions.aspect = '1:1'
       dimensions.mode = 'square'
     } else {
@@ -105,13 +113,13 @@ export default defineEventHandler(async (event) => {
       let dividend: number
       let divisor: number
 
-      if (dimensions.height > dimensions.width) {
-        dividend = dimensions.height
-        divisor = dimensions.width
+      if (height > width) {
+        dividend = height
+        divisor = width
         dimensions.mode = 'portrait'
       } else {
-        dividend = dimensions.width
-        divisor = dimensions.height
+        dividend = width ?? 0
+        divisor = height ?? 0
         dimensions.mode = 'landscape'
       }
 
@@ -127,17 +135,17 @@ export default defineEventHandler(async (event) => {
         }
       }
 
-      dimensions.aspect = `${dimensions.width / gcd}:${dimensions.height / gcd}`
+      dimensions.aspect = `${width / gcd}:${height / gcd}`
     }
   }
 
   // extract colors
-  const colors: string[] = source?.match(COLOR_RE).reduce((acc, color) => {
-    if (!acc.includes(color)) {
+  const colors: string[] = source?.match(COLOR_RE)?.reduce((acc, color) => {
+    if (color && !acc.includes(color)) {
       acc.push(color)
     }
     return acc
-  }, []) ?? []
+  }, [] as string[]) ?? []
 
   return {
     key,

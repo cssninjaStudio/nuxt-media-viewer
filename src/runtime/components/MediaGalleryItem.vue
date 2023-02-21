@@ -11,6 +11,7 @@ const fileStat = ref<AssetStats>()
 
 onMounted(() => {
   // check if image loads, the @error.once seems to be cached
+  // @todo: use IntersectionObserver to lazy load
   const image = new Image()
   image.onerror = async () => {
     image.onerror = null

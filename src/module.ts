@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { defineNuxtModule, addServerHandler, installModule, createResolver, addComponentsDir } from '@nuxt/kit'
+import { defineNuxtModule, addServerHandler, installModule } from '@nuxt/kit'
 import chalk from 'chalk'
 import consola from 'consola'
 
