@@ -3,8 +3,11 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import sizeOf from 'image-size'
 import { join } from 'pathe'
-import { AssetImageDimentions, AssetStats } from '../../shared'
-import { type ISizeCalculationResult, type ISize } from 'image-size/dist/types/interface'
+import { type ISize } from 'image-size/dist/types/interface'
+import { defineEventHandler, getQuery } from 'h3'
+import { AssetStats } from '../../shared'
+// @ts-ignore
+import { useRuntimeConfig } from '#imports'
 
 const execPromise = promisify(exec)
 const sizeOfPromise = promisify(sizeOf)
@@ -92,7 +95,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // extract images specific informations
-  const dimensions: ISize & { mode?: 'portrait' | 'landscape' | 'square'; aspect?: string  } | undefined = mimetype.startsWith('image/') ? await sizeOfPromise(absolutePath).then(r => r) : undefined
+  const dimensions: ISize & { mode?: 'portrait' | 'landscape' | 'square'; aspect?: string } | undefined = mimetype.startsWith('image/') ? await sizeOfPromise(absolutePath).then(r => r) : undefined
   const source = mimetype.startsWith('image/svg') ? await fsp.readFile(absolutePath, 'utf-8') : undefined
 
   // compute mode and aspect ratio

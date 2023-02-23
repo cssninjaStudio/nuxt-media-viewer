@@ -15,6 +15,7 @@ onMounted(() => {
   const image = new Image()
   image.onerror = async () => {
     image.onerror = null
+    // @ts-ignore
     fileStat.value = await $fetch(`/_media-viewer/stats?key=${props.assetKey}`)
     isImage.value = false
   }

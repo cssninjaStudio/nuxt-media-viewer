@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 // @ts-ignore
-import { useRouter, useRoute, useAsyncData, useHead } from '#app'
+import { useRouter, useRoute, useHead, useFetch } from '#app'
 import { onKeyStroke } from '@vueuse/core'
 
 import MediaGallery from '../components/MediaGallery.vue'
@@ -15,14 +15,7 @@ const route = useRoute()
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
 
 // list available assets
-const { data: assets } = useAsyncData(async () => {
-  const data = await $fetch<string[]>('/_media-viewer/ls')
-
-  // sort by path/name to keep same order as in file system
-  data.sort()
-
-  return data
-})
+const { data: assets } = useFetch('/_media-viewer/ls')
 
 // extract directories/extensions filters
 const directoriesKeysPrefix = computed(() => {

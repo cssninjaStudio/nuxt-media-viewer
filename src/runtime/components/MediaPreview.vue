@@ -30,6 +30,7 @@ watchEffect(async () => {
     return
   }
 
+  // @ts-ignore
   previewState.stats = await $fetch(`/_media-viewer/stats?key=${selectedAssetKey.value}`)
 
   // reset preview state

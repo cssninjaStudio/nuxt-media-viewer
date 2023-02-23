@@ -3,11 +3,13 @@
 // initial goal was to not use /_ipx prefix and plug this middleware directly on public folder but seems not possible
 
 import { createIPX } from 'ipx'
-import { send, appendHeader } from 'h3'
+import { send, appendHeader, defineEventHandler, setResponseStatus, getHeader } from 'h3'
 import qs from 'qs'
 import getEtag from 'etag'
-
 // @ts-ignore
+// eslint-disable-next-line import/named
+import { useRuntimeConfig } from '#imports'
+
 const config = useRuntimeConfig()
 const dir = config.mediaViewer.publicRoot
 
@@ -18,11 +20,12 @@ const ipx = createIPX({
 
 // @ts-ignore
 export default defineEventHandler(async (event) => {
-  if (!event.req.url.startsWith('/_ipx')) {
+  const url = event.node.req.url
+  if (!url || !url.startsWith('/_ipx')) {
     return
   }
 
-  const [originalPath, query] = event.req.url.replace('/_ipx', '').split('?')
+  const [originalPath, query] = url.replace('/_ipx', '').split('?')
   const modifiers = qs.parse(query) as Record<string, string>
   const img = ipx(originalPath, modifiers, {})
 
@@ -35,9 +38,10 @@ export default defineEventHandler(async (event) => {
 
     // Caching headers
     if (src.mtime) {
-      if (event.req.headers['if-modified-since']) {
-        if (new Date(event.req.headers['if-modified-since']) >= src.mtime) {
-          event.res.statusCode = 304
+      const ifModifiedSince = getHeader(event, 'if-modified-since')
+      if (ifModifiedSince) {
+        if (new Date(ifModifiedSince) >= src.mtime) {
+          event.node.res.statusCode = 304
           return null
         }
       }
@@ -53,8 +57,8 @@ export default defineEventHandler(async (event) => {
     // ETag
     const etag = getEtag(data)
     appendHeader(event, 'ETag', etag)
-    if (etag && event.req.headers['if-none-match'] === etag) {
-      event.res.statusCode = 304
+    if (etag && event.node.req.headers['if-none-match'] === etag) {
+      setResponseStatus(event, 304)
       return null
     }
 
@@ -65,6 +69,6 @@ export default defineEventHandler(async (event) => {
     const statusMessage = error.message ? `IPX Error (${error.message})` : `IPX Error (${statusCode})`
     console.error(statusMessage)
 
-    event.res.statusCode = statusCode
+    setResponseStatus(event, statusCode)
   }
 })
