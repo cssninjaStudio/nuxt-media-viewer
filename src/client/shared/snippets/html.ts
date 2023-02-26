@@ -1,7 +1,7 @@
-import { type PreviewState } from '../preview'
+import { type PreviewState } from '../../../../types/preview'
 
-function generateNuxtImageVectorSnippet (previewState: PreviewState) {
-  if (!previewState.stats?.dimensions) {
+function generateHtmlVectorSnippet (previewState: PreviewState) {
+  if (!previewState?.stats?.dimensions) {
     return ''
   }
 
@@ -10,18 +10,16 @@ function generateNuxtImageVectorSnippet (previewState: PreviewState) {
 
   const targetWidth = Math.min(previewState.stats.dimensions.width, previewState.targetWidth)
   const targetHeight = Math.min(previewState.stats.dimensions.height, previewState.targetHeight)
-
-  return `<nuxt-img
-  src="${hostname}${previewState.stats.path}"
-  width="${targetWidth}"
-  height="${targetHeight}"
-  loading="lazy"
-  ${previewState.alt ? `alt="${previewState.alt}"` : 'aria-hidden="true"\n  alt=""'}
-/>`
+  return `<img
+    src="${hostname}${previewState.stats.path}"
+    width="${targetWidth}"
+    height="${targetHeight}"
+    loading="lazy"
+    ${previewState.alt ? `alt="${previewState.alt}"` : 'aria-hidden="true"\n  alt=""'}
+  />`
 }
-
-function generateNuxtImageRasterSnippet (previewState: PreviewState) {
-  if (!previewState.stats?.dimensions) {
+function generateHtmlRasterSnippet (previewState: PreviewState) {
+  if (!previewState?.stats?.dimensions) {
     return ''
   }
 
@@ -45,7 +43,7 @@ function generateNuxtImageRasterSnippet (previewState: PreviewState) {
       `${hostname}/_ipx${previewState.stats.path}${baseModifier ? `?${baseModifier}&` : '?'}format=webp`
     ],
     src: [
-      `${hostname}/_ipx${previewState.stats.path}${baseModifier ? `?${baseModifier}` : ''}`
+      `${hostname}${baseModifier ? '/_ipx' : ''}${previewState.stats.path}${baseModifier ? `?${baseModifier}` : ''}`
     ]
   }
 
@@ -61,36 +59,53 @@ function generateNuxtImageRasterSnippet (previewState: PreviewState) {
     urls.src.push(`${hostname}/_ipx${previewState.stats.path}?width=${targetWidth * 3}&height=${targetHeight * 3}`)
   }
 
-  return `<nuxt-picture
-src="${hostname}/_ipx${previewState.stats.path}${baseModifier ? `?${baseModifier}` : ''}"${urls.src.length > 1 ? `\n    srcset="${urls.src.join(', ')}"` : ''}
-width="${targetWidth}"
-height="${targetHeight}"
-loading="lazy"
-decoding="async"
-${previewState.alt ? `alt="${previewState.alt}"` : 'aria-hidden="true"\n  alt=""'}
-/>`
+  return `<picture>
+  <source
+    type="image/avif"
+    srcset="${urls.avif.join(', ')}"
+  />
+  <source
+    type="image/webp"
+    srcset="${urls.webp.join(', ')}"
+  />
+  <img
+    src="${hostname}${baseModifier ? '/_ipx' : ''}${previewState.stats.path}${baseModifier ? `?${baseModifier}` : ''}"${urls.src.length > 1 ? `\n    srcset="${urls.src.join(', ')}"` : ''}
+    width="${targetWidth}"
+    height="${targetHeight}"
+    loading="lazy"
+    decoding="async"
+    ${previewState.alt ? `alt="${previewState.alt}"` : 'aria-hidden="true"\n    alt=""'}
+  />
+</picture>`
 }
-
-export function generateNuxtImageSnippet (previewState: PreviewState) {
-  if (!previewState.stats) {
+function generateHtmlDownloadSnippet (previewState: PreviewState) {
+  if (!previewState?.stats) {
     return ''
   }
 
   // @todo: use nuxt runtime config
   const hostname = `${document.location.protocol}//${document.location.host}`
 
-  switch (previewState.stats.mimetype) {
-    case 'image/svg+xml':
-      return generateNuxtImageVectorSnippet(previewState)
-    case 'image/png':
-    case 'image/jpeg':
-      return generateNuxtImageRasterSnippet(previewState)
-    default:
-      return `<a
+  return `<a
   href="${hostname}${previewState.stats.path}"
   download
 >
   Download ${previewState.stats.name}
 </a>`
+}
+
+export function generateHtmlSnippet (previewState: PreviewState) {
+  if (!previewState?.stats) {
+    return ''
+  }
+
+  switch (previewState.stats.mimetype) {
+    case 'image/svg+xml':
+      return generateHtmlVectorSnippet(previewState)
+    case 'image/png':
+    case 'image/jpeg':
+      return generateHtmlRasterSnippet(previewState)
+    default:
+      return generateHtmlDownloadSnippet(previewState)
   }
 }

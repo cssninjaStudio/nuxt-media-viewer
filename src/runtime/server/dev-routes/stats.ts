@@ -5,7 +5,7 @@ import sizeOf from 'image-size'
 import { join } from 'pathe'
 import { type ISize } from 'image-size/dist/types/interface'
 import { defineEventHandler, getQuery } from 'h3'
-import { AssetStats } from '../../shared'
+import type { AssetStats } from '../../../../types/preview'
 // @ts-ignore
 import { useRuntimeConfig } from '#imports'
 

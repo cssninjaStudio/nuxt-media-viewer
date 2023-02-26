@@ -15,15 +15,19 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build",
-    "dev": "nuxi dev playground",
-    "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
+    "prepack": "pnpm build",
+    "dev": "nuxi dev src/client",
+    "dev:playground": "pnpm build && nuxi dev playground",
+    "dev:prepare": "nuxi prepare src/runtime",
+    "build": "pnpm dev:prepare && pnpm build:module && pnpm build:client",
+    "build:client": "nuxi generate src/client",
+    "build:module": "nuxt-module-build",
     "release": "run-s release:*",
     "release:standard-version": "standard-version",
     "release:publish": "git push --follow-tags origin main && npm publish"
   },
   "dependencies": {
+    "@nuxt/devtools-ui-kit": "^0.2.3",
     "@vueuse/core": "^9.2.0",
     "@vueuse/nuxt": "^9.2.0",
     "chalk": "^5.0.1",
@@ -36,12 +40,14 @@
     "qs": "^6.11.0"
   },
   "devDependencies": {
+    "@nuxt/devtools": "0.2.3",
     "@nuxt/module-builder": "latest",
     "@nuxtjs/eslint-config-typescript": "latest",
     "@types/node": "^18.14.0",
     "eslint": "latest",
     "npm-run-all": "^4.1.5",
     "nuxt": "^3.2.0",
+    "sirv": "^2.0.2",
     "standard-version": "^9.5.0",
     "typescript": "^4.9.5"
   }

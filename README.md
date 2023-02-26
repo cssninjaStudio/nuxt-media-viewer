@@ -33,7 +33,7 @@ export default defineNuxtConfig({
 })
 ```
 
-3. Go to the media viewer page and start previewing your assets at [http://localhost:3000/_media-viewer](http://localhost:3000/_media-viewer)
+3. Go to the media viewer page and start previewing your assets at [http://localhost:3000/__media_viewer__/client](http://localhost:3000/__media_viewer__/client)
 
 
 ## Development

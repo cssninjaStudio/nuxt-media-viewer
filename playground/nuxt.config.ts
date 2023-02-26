@@ -1,10 +1,12 @@
-import MyModule from '..'
+import MediaViewer from '..'
 
 export default defineNuxtConfig({
   modules: [
-    MyModule
+    '@nuxt/devtools',
+    // @ts-ignore
+    MediaViewer
   ],
-  myModule: {
-    addPlugin: true
+  mediaViewer: {
+    installIpxMiddleware: true
   }
 })

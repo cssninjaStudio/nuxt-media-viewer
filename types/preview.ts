@@ -4,12 +4,14 @@ export interface AssetFSStats {
   mtime: string,
   ctime: string
 }
+
 export interface AssetImageDimentions {
   height: number,
   width: number,
   mode?: 'square' | 'portrait' | 'landscape',
   aspect?: string,
 }
+
 export interface AssetStats {
   key: string,
   name: string,

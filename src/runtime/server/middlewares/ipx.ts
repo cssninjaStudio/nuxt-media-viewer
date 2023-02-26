@@ -7,7 +7,6 @@ import { send, appendHeader, defineEventHandler, setResponseStatus, getHeader } 
 import qs from 'qs'
 import getEtag from 'etag'
 // @ts-ignore
-// eslint-disable-next-line import/named
 import { useRuntimeConfig } from '#imports'
 
 const config = useRuntimeConfig()
@@ -64,9 +63,10 @@ export default defineEventHandler(async (event) => {
 
     // Mime
     return send(event, data, `image/${format}`)
-  } catch (error) {
+  } catch (error: any) {
     const statusCode = parseInt(error.statusCode, 10) || 500
     const statusMessage = error.message ? `IPX Error (${error.message})` : `IPX Error (${statusCode})`
+    // eslint-disable-next-line no-console
     console.error(statusMessage)
 
     setResponseStatus(event, statusCode)

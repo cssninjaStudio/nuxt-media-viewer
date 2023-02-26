@@ -3,7 +3,8 @@ import { computed, reactive, provide, watchEffect, watch } from 'vue'
 // @ts-ignore
 import { useRoute } from '#app'
 
-import { vFocus, generateSnippet, type PreviewState } from '../shared'
+import type { PreviewState } from '../../../types/preview'
+import { vFocus, generateSnippet } from '../shared'
 import MediaPreviewImage from './MediaPreviewImage.vue'
 import MediaPreviewStats from './MediaPreviewStats.vue'
 
@@ -31,7 +32,9 @@ watchEffect(async () => {
   }
 
   // @ts-ignore
-  previewState.stats = await $fetch(`/_media-viewer/stats?key=${selectedAssetKey.value}`)
+  previewState.stats = await $fetch(`/__media_viewer__/stats?key=${selectedAssetKey.value}`, {
+    baseURL: '/'
+  })
 
   // reset preview state
   previewState.targetWidth = previewState.stats?.dimensions?.width ?? 0
@@ -66,7 +69,7 @@ watchEffect(() => {
 
 <template>
   <ClientOnly>
-    <NuxtLink v-if="selectedAssetKey" to="/_media-viewer" class="fixed inset-0 transition-all hover:backdrop-blur-none backdrop-blur-sm bg-white/30" />
+    <NuxtLink v-if="selectedAssetKey" to="/" class="fixed inset-0 transition-all hover:backdrop-blur-none backdrop-blur-sm bg-white/30" />
     <div v-show="selectedAssetKey" class="fixed inset-0 my-24 mx-32">
       <Transition
         enter-active-class="transition duration-100 ease-out"

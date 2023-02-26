@@ -1,4 +1,4 @@
-import { type PreviewState } from '../preview'
+import type { PreviewState } from '../../../../types/preview'
 
 export function generateInlineSvgSnippet (previewState: PreviewState) {
   if (!previewState?.stats?.dimensions || !previewState.stats.source) {

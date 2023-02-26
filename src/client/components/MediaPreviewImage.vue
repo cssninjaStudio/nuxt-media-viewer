@@ -2,7 +2,8 @@
 import { ref, computed, inject, watchEffect, onBeforeUnmount, watch } from 'vue'
 // @ts-ignore
 import { useRoute } from '#app'
-import { keyToPath, PreviewState } from '../shared'
+import { keyToPath } from '../shared'
+import type { PreviewState } from '../../../types/preview'
 
 const route = useRoute()
 

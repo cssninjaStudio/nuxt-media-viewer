@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { keyToPath, type AssetStats } from '../shared'
+import { keyToPath } from '../shared'
+import type { AssetStats } from '../../../types/preview'
 
 const props = defineProps<{
   assetKey: string
@@ -16,7 +17,9 @@ onMounted(() => {
   image.onerror = async () => {
     image.onerror = null
     // @ts-ignore
-    fileStat.value = await $fetch(`/_media-viewer/stats?key=${props.assetKey}`)
+    fileStat.value = await $fetch(`/__media_viewer__/stats?key=${props.assetKey}`, {
+      baseURL: '/'
+    })
     isImage.value = false
   }
   image.src = keyToPath(props.assetKey)

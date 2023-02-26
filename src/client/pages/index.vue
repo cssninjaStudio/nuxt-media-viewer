@@ -15,11 +15,13 @@ const route = useRoute()
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
 
 // list available assets
-const { data: assets } = useFetch('/_media-viewer/ls')
+const { data: assets } = useFetch('/__media_viewer__/ls', {
+  baseURL: '/'
+})
 
 // extract directories/extensions filters
 const directoriesKeysPrefix = computed(() => {
-  return (assets.value ?? [])
+  return (assets?.value ?? [])
     .map((item) => {
       const parts = item.split(':')
       parts.pop()
@@ -34,7 +36,7 @@ const directoriesKeysPrefix = computed(() => {
     .sort()
 })
 const extensions = computed(() => {
-  return (assets.value ?? [])
+  return (assets?.value ?? [])
     .map((item: string) => {
       const parts = item.split(':')
       const last = parts.pop()
@@ -64,7 +66,7 @@ const assetsKeysFiltered = computed(() => {
     return assets.value
   }
 
-  return assets.value
+  return (assets?.value ?? [])
     .filter((item: string) => {
       if (!filterDirectoryKey.value) {
         return true
@@ -94,7 +96,7 @@ onKeyStroke('Escape', (e) => {
 
   // otherwise, close the modal
   if (route.hash) {
-    router.push('/_media-viewer')
+    router.push('/')
   }
 })
 onKeyStroke('ArrowRight', (e) => {
@@ -105,7 +107,7 @@ onKeyStroke('ArrowRight', (e) => {
 
   // otherwise, open preview to next image
   if (!assetsKeysFiltered.value?.length) {
-    router.push('/_media-viewer')
+    router.push('/')
     return
   }
 
@@ -121,7 +123,7 @@ onKeyStroke('ArrowRight', (e) => {
     return
   }
 
-  router.push('/_media-viewer')
+  router.push('/')
 })
 onKeyStroke('ArrowLeft', (e) => {
   // do nothing if in input/textarea/select
@@ -131,7 +133,7 @@ onKeyStroke('ArrowLeft', (e) => {
 
   // otherwise, openw preview to previous image
   if (!assetsKeysFiltered.value?.length) {
-    router.push('/_media-viewer')
+    router.push('/')
     return
   }
 
@@ -147,7 +149,7 @@ onKeyStroke('ArrowLeft', (e) => {
     return
   }
 
-  router.push('/_media-viewer')
+  router.push('/')
 })
 
 // add tailwind cdn header
