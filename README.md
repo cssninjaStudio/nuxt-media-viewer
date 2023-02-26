@@ -28,15 +28,44 @@ npm install --save-dev @cssninja/nuxt-media-viewer
 ```ts
 export default defineNuxtConfig({
   modules: [
+    '@nuxt/devtools', // optional
     '@cssninja/nuxt-media-viewer'
   ]
 })
 ```
 
-3. Go to the media viewer page and start previewing your assets at [http://localhost:3000/__media_viewer__/client](http://localhost:3000/__media_viewer__/client)
+3. Go to the media viewer page and start previewing your assets at [http://localhost:3000/__media_viewer__/client](http://localhost:3000/__media_viewer__/client) or open the devtools and click on the `Media Viewer` tab.
 
+
+## Configuration
+
+```ts
+type ModuleOptions = {
+  /**
+   * @default false
+   */
+  installIpxMiddleware?: boolean
+
+  /**
+   * @default '/_ipx'
+   */
+  ipxMiddlewarePrefix?: string
+}
+```
+
+```ts
+export default defineNuxtConfig({
+  modules: [
+    '@cssninja/nuxt-media-viewer'
+  ],
+  mediaViewer: {
+    installIpxMiddleware: false,
+    ipxMiddlewarePrefix:  '/_ipx',
+  }
+})
+```
 
 ## Development
 
-- Run `npm run dev:prepare` to generate type stubs.
-- Use `npm run dev` to start [playground](./playground) in development mode.
+- Run `npm run dev` to develop the client UI.
+- Use `npm run dev:playground` to start [playground](./playground) in development mode.

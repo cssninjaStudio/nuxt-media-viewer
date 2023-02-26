@@ -9,7 +9,10 @@ const route = useRoute()
 
 const imageRef = ref()
 const mode = ref<'scale' | 'real'>('scale')
+const config = inject<any>('mediaViewerConfig')
+
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
+const selectedAssetSrc = keyToPath(selectedAssetKey, config)
 
 const previewState = inject<PreviewState>('previewState')
 const isImage = computed(() => previewState?.stats?.mimetype?.startsWith('image/'))
@@ -63,8 +66,12 @@ watch(mode, () => {
 <template>
   <div class="relative overflow-hidden rounded-l border-slate-100 border-r preview w-7/12 flex items-center justify-center">
     <div v-if="!isImage" class="rounded flex flex-col justify-center border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] bg-white object-scale-down">
-      <div class="truncate w-full text-center">{{ previewState?.stats?.name }}</div>
-      <div class="truncate w-full text-center text-sm text-slate-400">{{ previewState?.stats?.mimetype }}</div>
+      <div class="truncate w-full text-center">
+        {{ previewState?.stats?.name }}
+      </div>
+      <div class="truncate w-full text-center text-sm text-slate-400">
+        {{ previewState?.stats?.mimetype }}
+      </div>
     </div>
     <span
       v-else-if="mode === 'real'"
@@ -81,7 +88,7 @@ watch(mode, () => {
     />
     <img
       v-else
-      :src="keyToPath(selectedAssetKey)"
+      :src="selectedAssetSrc"
       class="prevent-drag block object-scale-down w-full max-w-full max-h-full"
       tabindex="0"
     >
@@ -94,8 +101,8 @@ watch(mode, () => {
             mode === 'scale' && 'bg-indigo-400 text-white',
             mode !== 'scale' && 'bg-white',
           ]"
-          @click="mode = 'scale'"
           :disabled="!isImage"
+          @click="mode = 'scale'"
         >
           Overview
         </button>
@@ -106,15 +113,15 @@ watch(mode, () => {
             mode === 'real' && 'bg-indigo-400 text-white',
             mode !== 'real' && 'bg-white',
           ]"
-          @click="mode = 'real'"
           :disabled="!isImage"
+          @click="mode = 'real'"
         >
           Realtime preview
         </button>
       </div>
 
       <a
-        :href="keyToPath(selectedAssetKey)"
+        :href="selectedAssetSrc"
         class=" text-sm py-1 px-3 rounded bg-white border border-slate-100 hover:bg-indigo-400 hover:text-white"
         target="_blank"
       >

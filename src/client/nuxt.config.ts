@@ -22,7 +22,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     mediaViewer: {
-      publicRoot: 'public'
+      publicRoot: 'public',
+      hasIpx: false,
+      ipxMiddlewarePrefix: '/_ipx'
     }
   }
 })

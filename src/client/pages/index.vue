@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { provide, ref, computed } from 'vue'
 // @ts-ignore
 import { useRouter, useRoute, useHead, useFetch } from '#app'
 import { onKeyStroke } from '@vueuse/core'
@@ -15,9 +15,17 @@ const route = useRoute()
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
 
 // list available assets
-const { data: assets } = useFetch('/__media_viewer__/ls', {
-  baseURL: '/'
+const { data: assets } = useFetch<string[]>('/__media_viewer__/ls', {
+  baseURL: '/',
+  default: () => [] as string[]
 })
+
+const { data: config } = useFetch<any>('/__media_viewer__/config', {
+  baseURL: '/',
+  default: () => ({})
+})
+
+provide('mediaViewerConfig', config)
 
 // extract directories/extensions filters
 const directoriesKeysPrefix = computed(() => {
@@ -32,9 +40,10 @@ const directoriesKeysPrefix = computed(() => {
         acc.push(item)
       }
       return acc
-    }, [])
+    }, [] as string[])
     .sort()
 })
+
 const extensions = computed(() => {
   return (assets?.value ?? [])
     .map((item: string) => {
@@ -48,12 +57,12 @@ const extensions = computed(() => {
 
       return ext
     })
-    .reduce((acc: string[], item: string) => {
+    .reduce((acc, item) => {
       if (item && !acc.includes(item)) {
         acc.push(item)
       }
       return acc
-    }, [])
+    }, [] as string[])
     .sort()
 })
 
@@ -63,7 +72,7 @@ const filterExtension = ref('')
 const hasFilter = computed(() => Boolean(filterDirectoryKey.value || filterExtension.value))
 const assetsKeysFiltered = computed(() => {
   if (!hasFilter.value) {
-    return assets.value
+    return []
   }
 
   return (assets?.value ?? [])
@@ -151,15 +160,6 @@ onKeyStroke('ArrowLeft', (e) => {
 
   router.push('/')
 })
-
-// add tailwind cdn header
-useHead({
-  script: [
-    {
-      src: 'https://cdn.tailwindcss.com'
-    }
-  ]
-})
 </script>
 
 <template>
@@ -172,7 +172,7 @@ useHead({
             /
           </option>
           <option v-for="key in directoriesKeysPrefix" :key="key" :value="key">
-            {{ keyToPath(key) }}
+            {{ keyToPath(key, config) }}
           </option>
         </select>
         <select v-model="filterExtension" class="rounded border border-slate-100 py-1 px-2">

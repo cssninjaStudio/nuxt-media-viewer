@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import { keyToPath } from '../shared'
 import type { AssetStats } from '../../../types/preview'
 
@@ -9,6 +9,8 @@ const props = defineProps<{
 
 const isImage = ref(true)
 const fileStat = ref<AssetStats>()
+const config = inject<any>('mediaViewerConfig')
+const src = keyToPath(props.assetKey, config)
 
 onMounted(() => {
   // check if image loads, the @error.once seems to be cached
@@ -22,7 +24,7 @@ onMounted(() => {
     })
     isImage.value = false
   }
-  image.src = keyToPath(props.assetKey)
+  image.src = src.value
 })
 </script>
 
@@ -30,8 +32,8 @@ onMounted(() => {
   <NuxtLink :key="props.assetKey" :to="`#${props.assetKey}`" class="transition-all prevent-drag hover:scale-150">
     <img
       v-if="isImage"
-      :src="`${keyToPath(props.assetKey, true)}?h=300`"
-      :title="keyToPath(props.assetKey)"
+      :src="`${src}?h=300`"
+      :title="src"
       width="100"
       loading="lazy"
       decoding="async"
@@ -39,8 +41,12 @@ onMounted(() => {
       class="prevent-drag rounded border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] preview bg-white object-scale-down"
     >
     <div v-else class="rounded flex flex-col justify-center border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] preview bg-white object-scale-down">
-      <div class="truncate w-full text-center">{{ fileStat?.name }}</div>
-      <div class="truncate w-full text-center text-sm text-slate-400">{{ fileStat?.mimetype }}</div>
+      <div class="truncate w-full text-center">
+        {{ fileStat?.name }}
+      </div>
+      <div class="truncate w-full text-center text-sm text-slate-400">
+        {{ fileStat?.mimetype }}
+      </div>
     </div>
   </NuxtLink>
 </template>

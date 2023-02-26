@@ -11,6 +11,7 @@ import { useRuntimeConfig } from '#imports'
 
 const config = useRuntimeConfig()
 const dir = config.mediaViewer.publicRoot
+const ipxMiddlewarePrefix = config.mediaViewer.ipxMiddlewarePrefix
 
 const ipx = createIPX({
   dir,
@@ -20,11 +21,11 @@ const ipx = createIPX({
 // @ts-ignore
 export default defineEventHandler(async (event) => {
   const url = event.node.req.url
-  if (!url || !url.startsWith('/_ipx')) {
+  if (!url || !url.startsWith(ipxMiddlewarePrefix)) {
     return
   }
 
-  const [originalPath, query] = url.replace('/_ipx', '').split('?')
+  const [originalPath, query] = url.replace(ipxMiddlewarePrefix, '').split('?')
   const modifiers = qs.parse(query) as Record<string, string>
   const img = ipx(originalPath, modifiers, {})
 

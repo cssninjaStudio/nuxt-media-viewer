@@ -5,62 +5,64 @@ import {
   defineNuxtModule,
   addServerHandler
 } from '@nuxt/kit'
-import chalk from 'chalk'
+import { joinURL } from 'ufo'
+import c from 'picocolors'
 import consola from 'consola'
 import sirv from 'sirv'
 
 import { name, version } from '../package.json'
 
 const distDir = resolve(fileURLToPath(import.meta.url), '..')
-const runtimeDir = resolve(distDir, 'runtime')
 const clientDir = resolve(distDir, 'client')
 
 const ROUTE_PATH = '/__media_viewer__'
-const ROUTE_ENTRY = `${ROUTE_PATH}/entry`
 const ROUTE_CLIENT = `${ROUTE_PATH}/client`
 
-export default defineNuxtModule({
+type ModuleOptions = {
+  /**
+   * @default false
+   */
+  installIpxMiddleware?: boolean
+
+  /**
+   * @default '/_ipx'
+   */
+  ipxMiddlewarePrefix?: string
+}
+
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
     configKey: 'mediaViewer'
   },
-  defaults: {
-    installIpxMiddleware: false
+  defaults: <ModuleOptions>{
+    installIpxMiddleware: false,
+    ipxMiddlewarePrefix: '/_ipx'
   },
   setup (options, nuxt) {
     const runtimeDir = fileURLToPath(new URL('./runtime', import.meta.url))
     const logger = consola.withScope('nuxt:media-viewer')
 
-    if (options.installIpxMiddleware) {
+    const hasUserProvidedIPX =
+      nuxt.options.serverHandlers.find(handler => options.ipxMiddlewarePrefix && handler.route?.startsWith(options.ipxMiddlewarePrefix)) ||
+      nuxt.options.devServerHandlers.find(handler => options.ipxMiddlewarePrefix && handler.route?.startsWith(options.ipxMiddlewarePrefix))
+
+    nuxt.options.runtimeConfig.mediaViewer = {
+      publicRoot: resolve(nuxt.options.rootDir, 'public'),
+      hasIpx: Boolean(hasUserProvidedIPX || options.installIpxMiddleware),
+      ipxMiddlewarePrefix: options.ipxMiddlewarePrefix ?? ''
+    }
+
+    if (options.installIpxMiddleware && !hasUserProvidedIPX) {
       // @todo: check if ipx middleware is already installed
       addServerHandler({
         handler: resolve(runtimeDir, 'server/middlewares/ipx')
       })
     }
 
-    const clientDirExists = existsSync(clientDir)
-
-    // @ts-expect-error - conditionally added by @nuxt/devtools if installed
-    nuxt.hook('devtools:customTabs', (tabs) => {
-      tabs.push({
-        // unique identifier
-        name: 'nuxt-media-viewer',
-        // title to display in the tab
-        title: 'Media Viewer',
-        // any icon from Iconify, or a URL to an image
-        icon: 'carbon:image',
-        // iframe view
-        view: {
-          type: 'iframe',
-          src: ROUTE_CLIENT
-        }
-      })
-    })
-
     // for now only inject viewer on dev mode
     if (nuxt.options.dev) {
-      // not sure if we need this if we don't include viewer in build?
       nuxt.options.build.transpile.push(runtimeDir)
 
       // register server routes to list files and get their stats
@@ -72,24 +74,42 @@ export default defineNuxtModule({
         route: `${ROUTE_PATH}/stats`,
         handler: resolve(runtimeDir, 'server/dev-routes/stats')
       })
+      addServerHandler({
+        route: `${ROUTE_PATH}/config`,
+        handler: resolve(runtimeDir, 'server/dev-routes/config')
+      })
 
       nuxt.hook('listen', (_, listener) => {
         logger.info(
-          `Media Viewer: ${chalk.underline.yellow(
-            `${listener.url}${ROUTE_CLIENT}`
+          `Media Viewer: ${c.yellow(
+            `${joinURL(listener.url, ROUTE_CLIENT)}`
           )}`
         )
       })
 
-      nuxt.options.runtimeConfig.mediaViewer = {
-        publicRoot: resolve(nuxt.options.rootDir, 'public')
-      }
-
+      const clientDirExists = existsSync(clientDir)
       nuxt.hook('vite:serverCreated', (server) => {
         // serve the front end in production
         if (clientDirExists) {
           server.middlewares.use(ROUTE_CLIENT, sirv(clientDir, { single: true, dev: true }))
         }
+      })
+
+      // @ts-expect-error - conditionally added by @nuxt/devtools if installed
+      nuxt.hook('devtools:customTabs', (tabs) => {
+        tabs.push({
+          // unique identifier
+          name: 'nuxt-media-viewer',
+          // title to display in the tab
+          title: 'Media Viewer',
+          // any icon from Iconify, or a URL to an image
+          icon: 'carbon:image',
+          // iframe view
+          view: {
+            type: 'iframe',
+            src: ROUTE_CLIENT
+          }
+        })
       })
     }
   }
