@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.4...v0.0.5) (2023-02-26)
+
+
+### Bug Fixes
+
+* optional ipx middleware and custom ipx path ([3391020](https://github.com/cssninjaStudio/nuxt-media-viewer/commit/339102054cea952da62f5f7f346f16dbd63fc466))
+
 ### [0.0.4](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.3...v0.0.4) (2023-02-26)
 
 
