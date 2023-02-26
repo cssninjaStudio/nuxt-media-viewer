@@ -1,6 +1,6 @@
 {
   "name": "@cssninja/nuxt-media-viewer",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "MIT",
   "type": "module",
   "exports": {
