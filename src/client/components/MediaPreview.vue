@@ -42,7 +42,7 @@ watchEffect(async () => {
   previewState.snippetColors = previewState.stats?.colors?.reduce((acc, color) => {
     acc[color] = color
     return acc
-  }, {}) ?? {}
+  }, {} as Record<string, string>) ?? {}
   previewState.alt = ''
   previewState.snippetType = 'html'
 })

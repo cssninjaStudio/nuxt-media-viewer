@@ -72,7 +72,7 @@ const filterExtension = ref('')
 const hasFilter = computed(() => Boolean(filterDirectoryKey.value || filterExtension.value))
 const assetsKeysFiltered = computed(() => {
   if (!hasFilter.value) {
-    return []
+    return assets?.value ?? []
   }
 
   return (assets?.value ?? [])

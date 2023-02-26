@@ -25,6 +25,11 @@ type ModuleOptions = {
   installIpxMiddleware?: boolean
 
   /**
+   * @default undefined
+   */
+  hasIpx?: boolean
+
+  /**
    * @default '/_ipx'
    */
   ipxMiddlewarePrefix?: string
@@ -38,28 +43,31 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: <ModuleOptions>{
     installIpxMiddleware: false,
+    hasIpx: undefined,
     ipxMiddlewarePrefix: '/_ipx'
   },
   setup (options, nuxt) {
     const runtimeDir = fileURLToPath(new URL('./runtime', import.meta.url))
     const logger = consola.withScope('nuxt:media-viewer')
 
-    const hasUserProvidedIPX =
-      nuxt.options.serverHandlers.find(handler => options.ipxMiddlewarePrefix && handler.route?.startsWith(options.ipxMiddlewarePrefix)) ||
-      nuxt.options.devServerHandlers.find(handler => options.ipxMiddlewarePrefix && handler.route?.startsWith(options.ipxMiddlewarePrefix))
+    nuxt.hook('modules:done', () => {
+      const hasUserProvidedIPX =
+        nuxt.options.serverHandlers.find(handler => options.ipxMiddlewarePrefix && handler.route?.startsWith(options.ipxMiddlewarePrefix)) ||
+        nuxt.options.devServerHandlers.find(handler => options.ipxMiddlewarePrefix && handler.route?.startsWith(options.ipxMiddlewarePrefix))
 
-    nuxt.options.runtimeConfig.mediaViewer = {
-      publicRoot: resolve(nuxt.options.rootDir, 'public'),
-      hasIpx: Boolean(hasUserProvidedIPX || options.installIpxMiddleware),
-      ipxMiddlewarePrefix: options.ipxMiddlewarePrefix ?? ''
-    }
+      nuxt.options.runtimeConfig.mediaViewer = {
+        publicRoot: resolve(nuxt.options.rootDir, 'public'),
+        hasIpx: options.hasIpx ?? Boolean(hasUserProvidedIPX || options.installIpxMiddleware),
+        ipxMiddlewarePrefix: options.ipxMiddlewarePrefix ?? ''
+      }
 
-    if (options.installIpxMiddleware && !hasUserProvidedIPX) {
-      // @todo: check if ipx middleware is already installed
-      addServerHandler({
-        handler: resolve(runtimeDir, 'server/middlewares/ipx')
-      })
-    }
+      if (options.installIpxMiddleware && !hasUserProvidedIPX) {
+        // @todo: check if ipx middleware is already installed
+        addServerHandler({
+          handler: resolve(runtimeDir, 'server/middlewares/ipx')
+        })
+      }
+    })
 
     // for now only inject viewer on dev mode
     if (nuxt.options.dev) {
