@@ -2,8 +2,8 @@
 import { ref, computed, inject, watchEffect, onBeforeUnmount, watch } from 'vue'
 // @ts-ignore
 import { useRoute } from '#app'
-import { keyToPath } from '../shared'
-import type { PreviewState } from '../../../types/preview'
+import type { PreviewState } from '../../types/preview'
+import { useKeyPath } from '~~/composables/keys'
 
 const route = useRoute()
 
@@ -12,7 +12,7 @@ const mode = ref<'scale' | 'real'>('scale')
 const config = inject<any>('mediaViewerConfig')
 
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
-const selectedAssetSrc = keyToPath(selectedAssetKey, config)
+const selectedAssetSrc = useKeyPath(selectedAssetKey, config)
 
 const previewState = inject<PreviewState>('previewState')
 const isImage = computed(() => previewState?.stats?.mimetype?.startsWith('image/'))
@@ -64,8 +64,8 @@ watch(mode, () => {
 </script>
 
 <template>
-  <div class="relative overflow-hidden rounded-l border-slate-100 border-r preview w-7/12 flex items-center justify-center">
-    <div v-if="!isImage" class="rounded flex flex-col justify-center border select-none pointer-events-none border-slate-100 w-[150px] h-[150px] bg-white object-scale-down">
+  <div class="relative overflow-hidden rounded-l n-border-base border-r preview flex items-center justify-center">
+    <div v-if="!isImage" class="rounded flex flex-col justify-center border select-none pointer-events-none n-border-base w-[150px] h-[150px] n-bg-base object-scale-down">
       <div class="truncate w-full text-center">
         {{ previewState?.stats?.name }}
       </div>
@@ -92,41 +92,44 @@ watch(mode, () => {
       class="prevent-drag block object-scale-down w-full max-w-full max-h-full"
       tabindex="0"
     >
-    <div class="absolute right-6 top-6 flex gap-2">
+    <div class="absolute left-4 right-4 top-4 flex justify-between gap-2">
+      <NButton
+        to="/"
+        icon="carbon:arrow-left"
+        class="n-bg-base"
+      >
+        <span>Back</span>
+      </NButton>
       <div>
-        <button
-          type="button"
-          class=" text-sm py-1 px-3 rounded-l border-r-0 border border-slate-100 disabled:opacity-60 disabled:cursor-not-allowed active:hover:bg-indigo-400 active:hover:text-white"
+        <NButton
           :class="[
-            mode === 'scale' && 'bg-indigo-400 text-white',
-            mode !== 'scale' && 'bg-white',
+            mode === 'scale' ? 'bg-primary' : 'n-bg-base',
           ]"
+          class="border-r-0 rounded-r-none"
           :disabled="!isImage"
           @click="mode = 'scale'"
         >
           Overview
-        </button>
-        <button
-          type="button"
-          class=" text-sm py-1 px-3 rounded-r bg-white border border-slate-100 disabled:opacity-60 disabled:cursor-not-allowed active:hover:bg-indigo-400 active:hover:text-white"
+        </NButton>
+        <NButton
           :class="[
-            mode === 'real' && 'bg-indigo-400 text-white',
-            mode !== 'real' && 'bg-white',
+            mode === 'real' ? 'bg-primary' : 'n-bg-base',
           ]"
+          class="border-l-0 rounded-l-none"
           :disabled="!isImage"
           @click="mode = 'real'"
         >
-          Realtime preview
-        </button>
+          Real-size preview
+        </NButton>
       </div>
 
-      <a
-        :href="selectedAssetSrc"
-        class=" text-sm py-1 px-3 rounded bg-white border border-slate-100 hover:bg-indigo-400 hover:text-white"
+      <NButton
+        :to="selectedAssetSrc"
         target="_blank"
+        class="n-bg-base"
       >
         Open in new tab
-      </a>
+      </NButton>
     </div>
   </div>
 </template>
@@ -136,6 +139,9 @@ watch(mode, () => {
   background-image: repeating-conic-gradient(#f8fafc 0% 25%, transparent 0% 50%);
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+.dark .preview {
+  background-image: repeating-conic-gradient(#1c1c1c 0% 25%, #151515 0% 50%);
 }
 .prevent-drag, .prevent-drag:deep(*) {
   -webkit-user-drag: none;

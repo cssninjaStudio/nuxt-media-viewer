@@ -1,8 +1,10 @@
 {
+  "root": true,
   "extends": [
     "@nuxtjs/eslint-config-typescript"
   ],
   "rules": {
+    "import/named": "off",
     "@typescript-eslint/no-unused-vars": [
       "off"
     ]

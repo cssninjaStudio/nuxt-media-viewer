@@ -22,10 +22,8 @@ dist
 .vercel_build_output
 .build-*
 .env
+!client/.env
 .netlify
-
-# Env
-.env
 
 # Testing
 reports

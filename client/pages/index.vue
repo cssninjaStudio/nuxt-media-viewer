@@ -1,27 +1,28 @@
 <script setup lang="ts">
 import { provide, ref, computed } from 'vue'
 // @ts-ignore
-import { useRouter, useRoute, useHead, useFetch } from '#app'
+import { useRouter, useRoute, useFetch, useRuntimeConfig } from '#app'
 import { onKeyStroke } from '@vueuse/core'
 
 import MediaGallery from '../components/MediaGallery.vue'
 import MediaPreview from '../components/MediaPreview.vue'
 import MediaDropPlaceholder from '../components/MediaDropPlaceholder.vue'
-import { keyToPath } from '../shared'
+import { keyPath, useKeyPath } from '~~/composables/keys'
 
 // keep track of the current image in hash so we can use the history
 const router = useRouter()
 const route = useRoute()
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
+const mvBaseURL = useRuntimeConfig().public.mvBaseURL
 
 // list available assets
-const { data: assets } = useFetch<string[]>('/__media_viewer__/ls', {
-  baseURL: '/',
+const { data: assets } = useFetch<string[]>('/__media_viewer/ls', {
+  baseURL: mvBaseURL,
   default: () => [] as string[]
 })
 
-const { data: config } = useFetch<any>('/__media_viewer__/config', {
-  baseURL: '/',
+const { data: config } = useFetch<any>('/__media_viewer/config', {
+  baseURL: mvBaseURL,
   default: () => ({})
 })
 
@@ -163,37 +164,38 @@ onKeyStroke('ArrowLeft', (e) => {
 </script>
 
 <template>
-  <div class="p-16 bg-slate-50 min-h-[100vh] relative">
+  <div class="p-4 n-bg-base min-h-[100vh] relative">
     <!-- assets filters -->
-    <form class="pb-16 flex items-center justify-between w-full" @submit.prevent>
+    <form class="pb-4 flex items-center justify-between w-full" @submit.prevent>
       <div class="flex gap-4">
-        <select v-model="filterDirectoryKey" class="rounded border border-slate-100 py-1 px-2">
+        <NSelect v-model="filterDirectoryKey">
           <option value="">
-            /
+            {{ useKeyPath('/').value }}
           </option>
           <option v-for="key in directoriesKeysPrefix" :key="key" :value="key">
-            {{ keyToPath(key, config) }}
+            {{ useKeyPath(key).value }}
           </option>
-        </select>
-        <select v-model="filterExtension" class="rounded border border-slate-100 py-1 px-2">
+        </NSelect>
+        <NSelect v-model="filterExtension">
           <option value="">
             all
           </option>
           <option v-for="ext in extensions" :key="ext" :value="ext">
             {{ ext }}
           </option>
-        </select>
-        <button
-          v-if="hasFilter"
-          type="reset"
-          @click.prevent="resetFilters"
-        >
+        </NSelect>
+        <NButton v-if="hasFilter" type="reset" @click.prevent="resetFilters">
           clear
-        </button>
+        </NButton>
       </div>
-      <div class="text-slate-400">
-        Viewing <span class="text-slate-700">{{ assetsKeysFiltered?.length }}</span>
-        of <span class="text-slate-700">{{ assets?.length }}</span>
+      <div class="n-header-upper flex gap-2">
+        <div class="op50">
+          Use <kbd>&larr;</kbd> and <kbd>&rarr;</kbd> to navigate
+        </div>
+        <div>
+          Viewing <span class="op50">{{ assetsKeysFiltered?.length }}</span>
+          of <span class="op50">{{ assets?.length }}</span>
+        </div>
       </div>
     </form>
 

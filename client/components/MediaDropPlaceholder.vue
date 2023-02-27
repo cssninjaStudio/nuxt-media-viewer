@@ -5,7 +5,7 @@ const isDropping = ref(false)
 // drag file over app handlers, to show drop placeholder
 // we need to keep track of how deep the drag is because it raises on each child elements
 let dragCount = 0
-function onDragenter (e) {
+function onDragenter (e: DragEvent) {
   dragCount += 1
   if (dragCount === 1) {
     isDropping.value = true
@@ -63,8 +63,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div>
-    <div v-if="isDropping" class="fixed inset-0 transition-all hover:backdrop-blur-none backdrop-blur-sm bg-white/30" />
-    <div v-show="isDropping" class="fixed inset-0 my-24 mx-32">
+    <div v-if="isDropping" class="fixed inset-0 transition-all hover:backdrop-blur-none backdrop-blur-sm bg-base/30" />
+    <div v-show="isDropping" class="fixed inset-0">
       <Transition
         enter-active-class="transition duration-100 ease-out"
         enter-from-class="transform scale-0 opacity-0"
@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
         leave-to-class="transform scale-0 opacity-0"
       >
         <div v-if="isDropping" class="h-full flex-1 flex items-center justify-center">
-          <div class="rounded border border-slate-100 drop-shadow-sm flex bg-white items-center justify-center w-[500px] h-[230px] mx-auto">
+          <div class="rounded border n-border-base drop-shadow-sm flex bg-base items-center justify-center w-[500px] h-[230px] mx-auto">
             <div class="text-2xl">
               Drop your files
             </div>

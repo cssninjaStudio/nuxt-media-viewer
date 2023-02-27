@@ -6,14 +6,13 @@ export default defineNuxtConfig({
     '@nuxt/devtools-ui-kit'
   ],
   ssr: false,
-  pages: true,
   nitro: {
     output: {
-      publicDir: resolve(__dirname, '../../dist/client')
+      publicDir: resolve(__dirname, '../dist/client')
     }
   },
   app: {
-    baseURL: '/__media_viewer__/client'
+    baseURL: '/__media_viewer/client'
   },
   vite: {
     build: {
@@ -21,6 +20,9 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
+    public: {
+      mvBaseURL: '/' // NUXT_PUBLIC_MV_BASE_URL
+    },
     mediaViewer: {
       publicRoot: 'public',
       hasIpx: false,

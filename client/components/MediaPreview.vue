@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { computed, reactive, provide, watchEffect, watch } from 'vue'
 // @ts-ignore
-import { useRoute } from '#app'
+import { useRuntimeConfig, useRoute } from '#app'
 
-import type { PreviewState } from '../../../types/preview'
-import { vFocus, generateSnippet } from '../shared'
+import type { PreviewState } from '../../types/preview'
 import MediaPreviewImage from './MediaPreviewImage.vue'
 import MediaPreviewStats from './MediaPreviewStats.vue'
+import { generateSnippet } from '~~/utils/snippets'
+import { vFocus } from '~~/utils/directives'
 
 // keep track of the current image in hash so we can use the history
 const route = useRoute()
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
+const mvBaseURL = useRuntimeConfig().public.mvBaseURL
 
 // provide state to childs
 const previewState = reactive({
@@ -32,8 +34,8 @@ watchEffect(async () => {
   }
 
   // @ts-ignore
-  previewState.stats = await $fetch(`/__media_viewer__/stats?key=${selectedAssetKey.value}`, {
-    baseURL: '/'
+  previewState.stats = await $fetch(`/__media_viewer/stats?key=${selectedAssetKey.value}`, {
+    baseURL: mvBaseURL
   })
 
   // reset preview state
@@ -54,11 +56,6 @@ watch(previewState, () => {
 
 // prevent gallery scrolling when preview modal is open
 watchEffect(() => {
-  // @ts-ignore
-  if (process.server) {
-    return
-  }
-
   if (selectedAssetKey.value) {
     document.documentElement.classList.add('overflow-hidden')
   } else {
@@ -68,9 +65,8 @@ watchEffect(() => {
 </script>
 
 <template>
-  <ClientOnly>
-    <NuxtLink v-if="selectedAssetKey" to="/" class="fixed inset-0 transition-all hover:backdrop-blur-none backdrop-blur-sm bg-white/30" />
-    <div v-show="selectedAssetKey" class="fixed inset-0 my-24 mx-32">
+  <div>
+    <div v-show="selectedAssetKey" class="fixed inset-0">
       <Transition
         enter-active-class="transition duration-100 ease-out"
         enter-from-class="transform scale-0 opacity-0"
@@ -79,13 +75,13 @@ watchEffect(() => {
         leave-from-class="transform scale-1 opacity-100"
         leave-to-class="transform scale-0 opacity-0"
       >
-        <div v-if="selectedAssetKey" v-focus tabindex="0" class="rounded border border-slate-100 drop-shadow-sm flex flex-1 relative bg-white h-full items-center justify-center">
+        <div v-if="selectedAssetKey" v-focus tabindex="0" class="rounded border n-border-base drop-shadow-sm flex flex-1 relative n-bg-base h-full items-center justify-center">
           <div class="rounded flex flex-1 h-full w-full">
-            <MediaPreviewImage :selected-asset-key="selectedAssetKey" />
-            <MediaPreviewStats :selected-asset-key="selectedAssetKey" />
+            <MediaPreviewImage class="w-6/12 md:w-7/12 lg:w-8/12" :selected-asset-key="selectedAssetKey" />
+            <MediaPreviewStats class="w-6/12 md:w-5/12 lg:w-4/12" :selected-asset-key="selectedAssetKey" />
           </div>
         </div>
       </Transition>
     </div>
-  </ClientOnly>
+  </div>
 </template>

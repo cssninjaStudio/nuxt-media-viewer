@@ -1,6 +1,5 @@
 import { defineEventHandler } from 'h3'
 // @ts-ignore
-// eslint-disable-next-line import/named
 import { useStorage } from '#imports'
 
 export default defineEventHandler(async () => {

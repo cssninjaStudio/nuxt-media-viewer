@@ -1,4 +1,4 @@
-import type { PreviewState } from '../../../../types/preview'
+import type { PreviewState } from '../../../types/preview'
 import { generateHtmlSnippet } from './html'
 import { generateInlineSvgSnippet } from './inline'
 import { generateNuxtImageSnippet } from './nuxt-image'

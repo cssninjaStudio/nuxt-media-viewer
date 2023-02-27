@@ -7,7 +7,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-12 gap-4">
+  <div class="flex flex-wrap gap-4">
     <MediaGalleryItem
       v-for="key in props.assetsKeys"
       :key="key"
