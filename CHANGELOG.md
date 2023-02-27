@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.9](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.8...v0.0.9) (2023-02-27)
+
+
+### Bug Fixes
+
+* real size preview image drag offset ([41c2a42](https://github.com/cssninjaStudio/nuxt-media-viewer/commit/41c2a426c6766f8d839330ab4390a82a831ffa0d))
+
 ### [0.0.8](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.7...v0.0.8) (2023-02-27)
 
 
