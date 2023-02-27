@@ -1,9 +1,9 @@
 import type { MaybeComputedRef } from '@vueuse/core'
-import { reactive, computed, isRef, type ComputedRef } from 'vue'
+import { computed, isRef, type ComputedRef } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { joinURL, withTrailingSlash } from 'ufo'
+import { MediaPreviewConfig } from '~~/utils/options'
 // replace an unstorage key 'root:public:xxx' to a path '/xxx
-type Options = { hasIpx?: boolean, ipxMiddlewarePrefix?: string }
 
 const mvBaseURL = useRuntimeConfig().public.mvBaseURL
 
@@ -18,7 +18,7 @@ export function keyPath (key?: string): string {
   )
 }
 
-export function useKeyPath (key: MaybeComputedRef<string>, config?: MaybeComputedRef<Options | undefined | null>): ComputedRef<string> {
+export function useKeyPath (key: MaybeComputedRef<string>, config?: MaybeComputedRef<MediaPreviewConfig | undefined | null>): ComputedRef<string> {
   const keyRef = computed(() => {
     return typeof key === 'function' ? key() : isRef(key) ? key.value : key
   })
@@ -28,7 +28,7 @@ export function useKeyPath (key: MaybeComputedRef<string>, config?: MaybeCompute
   })
 
   return computed(() => {
-    const prefix = withTrailingSlash(joinURL(mvBaseURL, (configRef.value?.hasIpx ? configRef.value?.ipxMiddlewarePrefix : '')))
+    const prefix = withTrailingSlash(joinURL(mvBaseURL, (configRef.value?.hasIpx && configRef.value?.ipxMiddlewarePrefix ? configRef.value.ipxMiddlewarePrefix : '')))
     return keyPath(keyRef.value).replace(/^\//, prefix)
   })
 }

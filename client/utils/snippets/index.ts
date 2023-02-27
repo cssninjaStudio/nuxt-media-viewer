@@ -1,11 +1,12 @@
 import type { PreviewState } from '../../../types/preview'
+import type { MediaPreviewConfig } from '../options'
 import { generateHtmlSnippet } from './html'
 import { generateInlineSvgSnippet } from './inline'
 import { generateNuxtImageSnippet } from './nuxt-image'
 
-export function generateSnippet (previewState: PreviewState) {
+export function generateSnippet (previewState: PreviewState, config: MediaPreviewConfig) {
   // @ts-ignore
-  if (!previewState.stats || process.server) {
+  if (!previewState.stats) {
     return ''
   }
 
@@ -13,9 +14,9 @@ export function generateSnippet (previewState: PreviewState) {
     case 'inline':
       return generateInlineSvgSnippet(previewState)
     case '@nuxt/image':
-      return generateNuxtImageSnippet(previewState)
+      return generateNuxtImageSnippet(previewState, config)
     case 'html':
     default:
-      return generateHtmlSnippet(previewState)
+      return generateHtmlSnippet(previewState, config)
   }
 }

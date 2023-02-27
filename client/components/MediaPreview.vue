@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, provide, watchEffect, watch } from 'vue'
+import { computed, reactive, inject, provide, watchEffect, watch } from 'vue'
 // @ts-ignore
 import { useRuntimeConfig, useRoute } from '#app'
 
@@ -13,6 +13,7 @@ import { vFocus } from '~~/utils/directives'
 const route = useRoute()
 const selectedAssetKey = computed(() => route.hash ? route.hash.substring(1) : '')
 const mvBaseURL = useRuntimeConfig().public.mvBaseURL
+const config = inject<any>('mediaViewerConfig')
 
 // provide state to childs
 const previewState = reactive({
@@ -50,8 +51,8 @@ watchEffect(async () => {
 })
 
 // refresh snippet
-watch(previewState, () => {
-  previewState.snippet = generateSnippet(previewState)
+watch([previewState, config], () => {
+  previewState.snippet = generateSnippet(previewState, config.value)
 }, { deep: true, immediate: true })
 
 // prevent gallery scrolling when preview modal is open

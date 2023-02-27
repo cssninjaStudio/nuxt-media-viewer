@@ -3,6 +3,7 @@ import { inject, computed } from 'vue'
 import prettyBytes from 'pretty-bytes'
 import { parseISO, formatDistanceToNow } from 'date-fns'
 
+const config = inject<any>('mediaViewerConfig')
 const previewState = inject<any>('previewState')
 const hasUpdatedSize = computed(() => previewState.targetWidth !== previewState.stats.dimensions.width || previewState.targetHeight !== previewState.stats.dimensions.height)
 
@@ -34,7 +35,7 @@ function onUpdateHeight (value?: number | string) {
       :text="previewState?.stats?.name"
       :description="previewState?.stats?.mimetype"
       collapse
-      open
+      :open="false"
     >
       <div class="flex flex-col gap-6">
         <NCard class="p-4">

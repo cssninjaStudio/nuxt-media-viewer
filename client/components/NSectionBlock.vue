@@ -10,9 +10,7 @@ withDefaults(
     padding?: boolean | string
   }>(), {
     containerClass: '',
-    open: true,
     padding: true,
-    collapse: true,
     icon: '',
     description: ''
   }

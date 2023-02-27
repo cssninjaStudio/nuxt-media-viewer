@@ -73,7 +73,7 @@ watch(mode, () => {
         {{ previewState?.stats?.mimetype }}
       </div>
     </div>
-    <span
+    <div
       v-else-if="mode === 'real'"
       ref="imageRef"
       class="prevent-drag block absolute max-w-none origin-top-left hover:cursor-grab active:cursor-grabbing"
