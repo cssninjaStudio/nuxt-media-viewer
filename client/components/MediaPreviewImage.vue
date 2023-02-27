@@ -36,8 +36,8 @@ function onMousemove (e: MouseEvent) {
   if (!e.screenX && !e.screenY) { return } // don't move if mouse is out of the screen
   if (!imageRef.value) { return }
 
-  offsetX.value = e.clientX - initialX.value - 128 // 128 = mx-32 (magin present on X axis on MediaPreview container)
-  offsetY.value = e.clientY - initialY.value - 96 // 96 = my-24 (magin present on Y axis on on MediaPreview container)
+  offsetX.value = e.clientX - initialX.value
+  offsetY.value = e.clientY - initialY.value
 }
 
 function onMouseup (e: MouseEvent) {
