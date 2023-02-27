@@ -28,7 +28,7 @@
     "release:publish": "git push --follow-tags origin main && npm publish"
   },
   "dependencies": {
-    "@nuxt/devtools-ui-kit": "^0.2.3",
+    "@nuxt/devtools-ui-kit": "npm:@nuxt/devtools-ui-kit-edge",
     "@vueuse/core": "^9.2.0",
     "@vueuse/nuxt": "^9.2.0",
     "consola": "^2.15.3",

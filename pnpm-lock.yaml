@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@nuxt/devtools': 0.2.3
-  '@nuxt/devtools-ui-kit': ^0.2.3
+  '@nuxt/devtools-ui-kit': npm:@nuxt/devtools-ui-kit-edge
   '@nuxt/image-edge': 1.0.0-27954023.4cee565
   '@nuxt/module-builder': latest
   '@nuxtjs/eslint-config-typescript': latest
@@ -28,7 +28,7 @@ specifiers:
   ufo: ^1.1.0
 
 dependencies:
-  '@nuxt/devtools-ui-kit': 0.2.3_nuxt@3.2.2
+  '@nuxt/devtools-ui-kit': /@nuxt/devtools-ui-kit-edge/0.2.3-27958388.eb222ce_nuxt@3.2.2
   '@vueuse/core': 9.13.0
   '@vueuse/nuxt': 9.13.0_nuxt@3.2.2
   consola: 2.15.3
@@ -963,8 +963,8 @@ packages:
   /@nuxt/devalue/2.0.0:
     resolution: {integrity: sha512-YBI/6o2EBz02tdEJRBK8xkt3zvOFOWlLBf7WKYGBsSYSRtjjgrqPe2skp6VLLmKx5WbHHDNcW+6oACaurxGzeA==}
 
-  /@nuxt/devtools-ui-kit/0.2.3_nuxt@3.2.2:
-    resolution: {integrity: sha512-BMGSrhb3+sRdIxNBjazjjTiRFf5+pcqpxihkNd3DLEuiJG+WlTUrx049490R4lzMHN1alWJo/oeqGJGksCgySQ==}
+  /@nuxt/devtools-ui-kit-edge/0.2.3-27958388.eb222ce_nuxt@3.2.2:
+    resolution: {integrity: sha512-XRg7VNRnmupD1OTZ/pAvxVFGLrjhKr6lATUPBwio2wqFEiUjjMfaGlyjvbtTLDgkUhyztbV4akjiShwWkbOWTg==}
     dependencies:
       '@iconify-json/carbon': 1.1.16
       '@nuxt/kit': 3.2.2

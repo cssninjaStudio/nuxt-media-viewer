@@ -8,6 +8,7 @@ import { useKeyPath } from '~~/composables/keys'
 const route = useRoute()
 
 const imageRef = ref()
+const previewRef = ref()
 const mode = ref<'scale' | 'real'>('scale')
 const config = inject<any>('mediaViewerConfig')
 
@@ -19,7 +20,7 @@ const isImage = computed(() => previewState?.stats?.mimetype?.startsWith('image/
 
 const dragging = ref(false)
 const offsetX = ref(0)
-const offsetY = ref(0)
+const offsetY = ref(75)
 const initialX = ref(0)
 const initialY = ref(0)
 
@@ -55,16 +56,20 @@ onBeforeUnmount(() => {
   imageRef.value?.removeEventListener('mousedown', onMousedown)
 })
 
-watch(mode, () => {
+watch([mode, () => previewState?.targetWidth], () => {
+  const viewportWidth = previewRef.value?.clientWidth ?? 0
+  const mediaWidth = previewState?.targetWidth ?? 0
+  const centerX = (viewportWidth - mediaWidth) / 2
+
   initialX.value = 0
   initialY.value = 0
-  offsetX.value = 0
-  offsetY.value = 0
+  offsetX.value = centerX
+  offsetY.value = 75
 })
 </script>
 
 <template>
-  <div class="relative overflow-hidden rounded-l n-border-base border-r preview flex items-center justify-center">
+  <div ref="previewRef" class="relative overflow-hidden rounded-l n-border-base border-r preview flex items-center justify-center">
     <div v-if="!isImage" class="rounded flex flex-col justify-center border select-none pointer-events-none n-border-base w-[150px] h-[150px] n-bg-base object-scale-down">
       <div class="truncate w-full text-center">
         {{ previewState?.stats?.name }}
@@ -92,13 +97,13 @@ watch(mode, () => {
       class="prevent-drag block object-scale-down w-full max-w-full max-h-full"
       tabindex="0"
     >
-    <div class="absolute left-4 right-4 top-4 flex justify-between gap-2">
+    <div class="absolute actions w-full px-4 top-4 flex justify-between gap-2">
       <NButton
         to="/"
-        icon="carbon:arrow-left"
         class="n-bg-base"
       >
-        <span>Back</span>
+        <NIcon icon="carbon:arrow-left" />
+        <span class="hide-small ml-1">Back <kbd class="text-xs">esc</kbd></span>
       </NButton>
       <div>
         <NButton
@@ -119,7 +124,7 @@ watch(mode, () => {
           :disabled="!isImage"
           @click="mode = 'real'"
         >
-          Real-size preview
+          Snippet preview
         </NButton>
       </div>
 
@@ -128,7 +133,8 @@ watch(mode, () => {
         target="_blank"
         class="n-bg-base"
       >
-        Open in new tab
+        <span class="hide-small mr-1">Open</span>
+        <NIcon icon="carbon:image-reference" />
       </NButton>
     </div>
   </div>
@@ -149,5 +155,24 @@ watch(mode, () => {
   -moz-user-drag: none;
   -o-user-drag: none;
   user-drag: none;
+}
+
+.actions {
+  container-type: inline-size;
+  container-name: actions;
+}
+.hide-small {
+  display: initial;
+}
+.only-small {
+  display: none;
+}
+@container actions (max-width: 600px) {
+  .hide-small {
+    display: none;
+  }
+  .only-small {
+    display: initial;
+  }
 }
 </style>
