@@ -16,7 +16,7 @@ export function setupDevToolsUI (
     nuxt.hook('vite:serverCreated', async (server) => {
       const sirv = await import('sirv').then(r => r.default || r)
       server.middlewares.use(
-        DEVTOOLS_UI_ROUTE,
+        DEVTOOLS_UI_ROUTE + '/client',
         sirv(clientPath, { dev: true, single: true })
       )
     })
