@@ -209,3 +209,18 @@ onKeyStroke('ArrowLeft', (e) => {
     <MediaDropPlaceholder v-if="!selectedAssetKey" />
   </div>
 </template>
+
+<style>
+/* Splitpanes */
+.splitpanes__splitter{
+ --at-apply: relative;
+}
+.splitpanes__splitter:before {
+  --at-apply: absolute left-0 top-0 opacity-0;
+  content: '';
+  transition: opacity 0.4s;
+  z-index: 1;
+}
+.splitpanes--vertical > .splitpanes__splitter:before {left: -4px;right: -4px;height: 100%;}
+.splitpanes--horizontal > .splitpanes__splitter:before {top: -4px;bottom: -4px;width: 100%;}
+</style>

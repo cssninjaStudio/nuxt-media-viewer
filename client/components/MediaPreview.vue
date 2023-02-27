@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, inject, provide, watchEffect, watch } from 'vue'
 // @ts-ignore
+import { Pane, Splitpanes } from 'splitpanes'
+// @ts-ignore
 import { useRuntimeConfig, useRoute } from '#app'
 
 import type { PreviewState } from '../../types/preview'
@@ -76,11 +78,15 @@ watchEffect(() => {
         leave-from-class="transform scale-1 opacity-100"
         leave-to-class="transform scale-0 opacity-0"
       >
-        <div v-if="selectedAssetKey" v-focus tabindex="0" class="rounded border n-border-base drop-shadow-sm flex flex-1 relative n-bg-base h-full items-center justify-center">
-          <div class="rounded flex flex-1 h-full w-full">
-            <MediaPreviewImage class="w-6/12 md:w-7/12 lg:w-8/12" :selected-asset-key="selectedAssetKey" />
-            <MediaPreviewStats class="w-6/12 md:w-5/12 lg:w-4/12" :selected-asset-key="selectedAssetKey" />
-          </div>
+        <div v-if="selectedAssetKey" v-focus tabindex="0" class="border outline-none n-border-base drop-shadow-sm flex flex-1 relative n-bg-base h-full items-center justify-center">
+          <Splitpanes class="flex flex-1 h-full w-full">
+            <Pane class="border border-r border-base of-auto" min-size="30">
+              <MediaPreviewImage class="h-full" :selected-asset-key="selectedAssetKey" />
+            </Pane>
+            <Pane size="30" min-size="30">
+              <MediaPreviewStats class="h-full" :selected-asset-key="selectedAssetKey" />
+            </Pane>
+          </Splitpanes>
         </div>
       </Transition>
     </div>

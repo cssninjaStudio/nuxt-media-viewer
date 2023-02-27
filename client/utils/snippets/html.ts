@@ -105,7 +105,7 @@ function generateHtmlDownloadSnippet (previewState: PreviewState) {
   return [
     '<a',
     `  href="${hostname}${previewState.stats.path}"`,
-    '  download,',
+    '  download',
     '>',
     `  Download ${previewState.stats.name}`,
     '</a>'
