@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.6...v0.0.7) (2023-02-27)
+
+
+### Features
+
+* use devtools ui ([a7a7be3](https://github.com/cssninjaStudio/nuxt-media-viewer/commit/a7a7be3d8e28e15d80f8e7ee4ebb814ed8996c0c))
+
 ### [0.0.6](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.5...v0.0.6) (2023-02-26)
 
 
