@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.12](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.11...v0.0.12) (2023-02-27)
+
+
+### Features
+
+* add splitpanes ([bf80166](https://github.com/cssninjaStudio/nuxt-media-viewer/commit/bf801666a25488dafa32b10d716f3e4c205f616a))
+* center snippet preview + remove devtools ui components ([a692df7](https://github.com/cssninjaStudio/nuxt-media-viewer/commit/a692df7603e91df0043a33a80f3e795941fd0614))
+
 ### [0.0.11](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.10...v0.0.11) (2023-02-27)
 
 
