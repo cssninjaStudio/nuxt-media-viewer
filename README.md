@@ -28,13 +28,13 @@ npm install --save-dev @cssninja/nuxt-media-viewer
 ```ts
 export default defineNuxtConfig({
   modules: [
-    '@nuxt/devtools', // optional
+    '@nuxt/devtools',
     '@cssninja/nuxt-media-viewer'
   ]
 })
 ```
 
-3. Go to the media viewer page and start previewing your assets at [http://localhost:3000/__media_viewer__/client](http://localhost:3000/__media_viewer__/client) or open the devtools and click on the `Media Viewer` tab.
+3. Go to the media viewer page and start previewing your assets at [http://localhost:3000/__media_viewer/client/](http://localhost:3000/__media_viewer/client/) or open the devtools and click on the `Media Viewer` tab.
 
 
 ## Configuration
