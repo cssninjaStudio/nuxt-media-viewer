@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.15](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.14...v0.0.15) (2023-03-10)
+
+
+### Bug Fixes
+
+* update dependencies ([a1de16b](https://github.com/cssninjaStudio/nuxt-media-viewer/commit/a1de16bfbdb0bfe29bd0baf864e34c891f595acf))
+
 ### [0.0.14](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.13...v0.0.14) (2023-03-10)
 
 ### [0.0.13](https://github.com/cssninjaStudio/nuxt-media-viewer/compare/v0.0.12...v0.0.13) (2023-03-07)
